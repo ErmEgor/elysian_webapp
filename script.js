@@ -1,33 +1,27 @@
 document.addEventListener('DOMContentLoaded', function () {
     const tg = window.Telegram.WebApp;
-    tg.expand(); // Расширяем Web App на весь экран для удобства
-    tg.MainButton.hide(); // Скрываем основную кнопку, нам она не нужна
+    tg.expand();
+    tg.MainButton.hide();
 
     const calendar = new VanillaCalendar('#calendar-container', {
-        // Обработка событий
         actions: {
-            // Эта функция вызывается при клике на день
             clickDay(e, dates) {
                 if (dates[0]) {
                     const selectedDate = dates[0]; // Формат YYYY-MM-DD
-                    // Отправляем выбранную дату боту
                     tg.sendData(selectedDate);
-                    // Web App можно закрыть после выбора
                     tg.close();
                 }
             },
         },
-        // Настройки календаря
         settings: {
-            lang: 'ru', // Язык
+            lang: 'ru',
             selection: {
-                day: 'single', // Можно выбрать только один день
+                day: 'single',
             },
             visibility: {
-                daysOutside: false, // Не показывать дни из других месяцев
-                theme: tg.colorScheme, // 'light' или 'dark'
+                daysOutside: false,
+                theme: tg.colorScheme,
             },
-            // Запрещаем выбирать даты в прошлом
             range: {
                 min: new Date().toISOString().split('T')[0],
             }
