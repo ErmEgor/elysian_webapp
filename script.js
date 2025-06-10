@@ -1,44 +1,50 @@
 // webapp/script.js
 
-document.addEventListener('DOMContentLoaded', function () {
-    try {
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.MainButton.hide();
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.MainButton.hide();
 
-        const calendar = new VanillaCalendar('#calendar-container', {
-            actions: {
-                clickDay(e, dates) {
-                    // Убеждаемся, что dates существует и содержит хотя бы один элемент
-                    if (dates && dates[0]) {
-                        const selectedDate = dates[0]; // Формат YYYY-MM-DD
-                        
-                        // Проблемная строка УДАЛЕНА. Теперь код сразу перейдет к отправке данных.
-                        
-                        tg.sendData(selectedDate);
-                        tg.close();
-                    }
-                },
-            },
-            settings: {
-                lang: 'ru',
-                selection: {
-                    day: 'single',
-                },
-                visibility: {
-                    daysOutside: false,
-                    theme: tg.colorScheme,
-                },
-                range: {
-                    min: new Date().toISOString().split('T')[0],
-                }
-            }
-        });
-        calendar.init();
-    } catch (e) {
-        document.body.innerHTML = `<div style="padding: 10px; color: red; font-family: monospace;">
-            <h2>Ошибка при инициализации:</h2>
-            <p>${e.name}: ${e.message}</p>
-        </div>`;
-    }
+    // Инициализируем календарь. Обратите внимание, что блока 'actions' здесь больше нет.
+    const calendar = new VanillaCalendar('#calendar-container', {
+      settings: {
+        lang: 'ru',
+        selection: {
+          day: 'single',
+        },
+        visibility: {
+          daysOutside: false,
+          theme: tg.colorScheme || 'light',
+        },
+        range: {
+          min: new Date().toISOString().split('T')[0],
+        },
+      },
+    });
+
+    // ИЗМЕНЕНИЕ: Это новый, правильный способ отслеживать выбор даты.
+    // Мы "подписываемся" на событие 'date:selected'.
+    calendar.on('date:selected', (data) => {
+      // Убеждаемся, что данные существуют и содержат хотя бы одну дату
+      if (data && data.dates && data.dates[0]) {
+        const selectedDate = data.dates[0]; // Формат YYYY-MM-DD
+        
+        // Отправляем данные и закрываем Web App
+        tg.sendData(selectedDate);
+        tg.close();
+      }
+    });
+
+    // Запускаем календарь
+    calendar.init();
+
+  } catch (e) {
+    // Вывод ошибки на страницу, если что-то пошло не так при инициализации
+    document.body.innerHTML = `<div style="padding: 15px; color: #FF0000; font-family: monospace; background-color: #FFF0F0;">
+        <h3 style="margin-top: 0;">Критическая ошибка в Web App:</h3>
+        <p><b>Имя:</b> ${e.name}</p>
+        <p><b>Сообщение:</b> ${e.message}</p>
+    </div>`;
+  }
 });
