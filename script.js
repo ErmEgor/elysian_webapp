@@ -9,18 +9,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const calendar = new VanillaCalendar('#calendar-container', {
             actions: {
                 clickDay(e, dates) {
+                    // Убеждаемся, что dates существует и содержит хотя бы один элемент
                     if (dates && dates[0]) {
                         const selectedDate = dates[0]; // Формат YYYY-MM-DD
-
-                        // --- ДОБАВЛЕНА ПРОВЕРКА ---
-                        // Это всплывающее окно появится, только если
-                        // скрипт успешно определил клик и получил дату.
-                        tg.showAlert(`Готовлюсь отправить дату: ${selectedDate}`);
-
+                        
+                        // Проблемная строка УДАЛЕНА. Теперь код сразу перейдет к отправке данных.
+                        
                         tg.sendData(selectedDate);
                         tg.close();
-                    } else {
-                        tg.showAlert("Не удалось получить дату после клика.");
                     }
                 },
             },
@@ -40,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         calendar.init();
     } catch (e) {
-        // Вывод ошибки прямо на страницу, если что-то пошло не так при инициализации
         document.body.innerHTML = `<div style="padding: 10px; color: red; font-family: monospace;">
             <h2>Ошибка при инициализации:</h2>
             <p>${e.name}: ${e.message}</p>
